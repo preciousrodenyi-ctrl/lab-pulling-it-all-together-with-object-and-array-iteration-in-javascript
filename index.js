@@ -114,3 +114,115 @@ function gameObject() {
         },
     };
 }
+function allPlayers() {
+    const game = gameObject();
+    const players = {};
+
+    for (let player in game.home.players) {
+        players[player] = game.home.players[player];
+    }
+
+    for (let player in game.away.players) {
+        players[player] = game.away.players[player];
+    }
+
+    return players;
+}
+
+// 1. Points scored
+function numPointsScored(playerName) {
+    return allPlayers()[playerName].points;
+}
+
+// 2. Shoe size
+function shoeSize(playerName) {
+    return allPlayers()[playerName].shoe;
+}
+
+// 3. Team colors
+function teamColors(teamName) {
+    const game = gameObject();
+    for (let team in game) {
+        if (game[team].teamName === teamName) {
+            return game[team].colors;
+        }
+    }
+}
+
+// 4. Team names
+function teamNames() {
+    const game = gameObject();
+    return Object.values(game).map(team => team.teamName);
+}
+
+// 5. Player numbers
+function playerNumbers(teamName) {
+    const game = gameObject();
+    for (let team in game) {
+        if (game[team].teamName === teamName) {
+            return Object.values(game[team].players).map(player => player.number);
+        }
+    }
+}
+
+// 6. Player stats
+function playerStats(playerName) {
+    return allPlayers()[playerName];
+}
+
+// 7. Biggest shoe rebounds
+function bigShoeRebounds() {
+    const players = Object.values(allPlayers());
+    let biggest = players[0];
+
+    for (let player of players) {
+        if (player.shoe > biggest.shoe) {
+            biggest = player;
+        }
+    }
+
+    return biggest.rebounds;
+}
+
+// BONUS
+
+function mostPointsScored() {
+    const players = Object.values(allPlayers());
+    return players.reduce((max, player) =>
+        player.points > max.points ? player : max
+    ).points;
+}
+
+function winningTeam() {
+    const game = gameObject();
+
+    const teamPoints = team => {
+        return Object.values(team.players)
+            .reduce((sum, player) => sum + player.points, 0);
+    };
+
+    const homePoints = teamPoints(game.home);
+    const awayPoints = teamPoints(game.away);
+
+    return homePoints > awayPoints
+        ? game.home.teamName
+        : game.away.teamName;
+}
+
+function playerWithLongestName() {
+    const players = Object.keys(allPlayers());
+    return players.reduce((longest, name) =>
+        name.length > longest.length ? name : longest
+    );
+}
+
+function doesLongNameStealATon() {
+    const players = allPlayers();
+
+    const longestName = playerWithLongestName();
+    const maxStealsPlayer = Object.entries(players).reduce((max, [name, stats]) =>
+        stats.steals > max[1].steals ? [name, stats] : max
+    );
+
+    return longestName === maxStealsPlayer[0];
+}
